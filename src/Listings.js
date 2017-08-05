@@ -3,11 +3,11 @@ import axios from 'axios';
 
 class Listings extends Component {
   constructor(props) {
-      super(props);
-      this.state = {
-        list: [],
-        searchString: ''
-      }
+    super(props);
+    this.state = {
+      list: [],
+      searchString: ''
+    }
   }
 
   handleType(e) {
@@ -18,9 +18,10 @@ class Listings extends Component {
     })
   }
 
-  getGifs(input) {
-    console.log(input);
-    axios.get(`http://api.giphy.com/v1/gifs/search?q=${input}&api_key=82c148f30bec4898a39c457eb6d3dc13`)
+  handleSubmit(e) {
+    e.preventDefault();
+    console.log(this.state.searchString);
+    axios.get(`http://api.giphy.com/v1/gifs/search?q=${this.state.searchString}&api_key=82c148f30bec4898a39c457eb6d3dc13`)
     .then((res) => {
       // console.log(res.data.data[0].embed_url);
       // return res.data.data[0].embed_url;
@@ -45,19 +46,26 @@ class Listings extends Component {
     return (
       <div>
         <h2>Welcome to Listings</h2>
-        <input id="textBox"
-          type='text'
-          name='search'
-          placeholder="Search for GIFs"
-          value = {this.state.searchText}
-          onChange={(e)=>this.handleType(e)}/>
-        <button onClick={()=>this.getGifs(this.state.searchString)}>DATA FROM Giphy</button>
+        <form onSubmit={(e)=>this.handleSubmit(e)}>
+          <input
+            id="textBox"
+            type='text'
+            name='search'
+            placeholder="Search for GIFs"
+            value = {this.state.searchText}
+            onChange={(e)=>this.handleType(e)}
+          />
+          <button
+            type="submit"
+            >TYPE STUFF!
+          </button>
+        </form>
         <p className="App-intro">
           Listing Section
         </p>
-          <div>This is GIF IMAGE:
-            {this.state.list.map(url => <embed key={url} src={url}/>)}
-          </div>
+        <div>This is GIF IMAGE:
+          {this.state.list.map(url => <embed key={url} src={url}/>)}
+        </div>
       </div>
     );
   }
