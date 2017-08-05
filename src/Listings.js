@@ -5,22 +5,35 @@ class Listings extends Component {
   constructor(props) {
       super(props);
       this.state = {
-        y: 0,
-        x: ''
+        list: [],
+        searchString: ''
       }
   }
 
-  helper() {
-    axios.get('http://api.giphy.com/v1/gifs/trending?limit=25&api_key=82c148f30bec4898a39c457eb6d3dc13')
-    .then((response) => {
-      console.log(response.data.data[0].embed_url);
-      return response.data.data[0].embed_url;
+  handleType(e) {
+    let input = e.target.value;
+    let parsed = input.split(' ').join('+');
+    this.setState({
+      searchString: parsed
+    })
+  }
+
+  getGifs(input) {
+    console.log(input);
+    axios.get(`http://api.giphy.com/v1/gifs/search?q=${input}&api_key=82c148f30bec4898a39c457eb6d3dc13`)
+    .then((res) => {
+      // console.log(res.data.data[0].embed_url);
+      // return res.data.data[0].embed_url;
+      return res.data;
     })
     .then((res) => {
       console.log(res);
+      let tempList = [];
+      for (let i = 0; i < res.data.length-15; i++) {
+        tempList.push(res.data[i].embed_url);
+      }
       this.setState({
-        y: 1,
-        x: res
+        list: tempList
       })
     })
     .catch(function(error) {
@@ -32,15 +45,18 @@ class Listings extends Component {
     return (
       <div>
         <h2>Welcome to Listings</h2>
-        <button onClick={()=>this.helper()}>DATA FROM Giphy</button>
+        <input id="textBox"
+          type='text'
+          name='search'
+          placeholder="Search for GIFs"
+          value = {this.state.searchText}
+          onChange={(e)=>this.handleType(e)}/>
+        <button onClick={()=>this.getGifs(this.state.searchString)}>DATA FROM Giphy</button>
         <p className="App-intro">
           Listing Section
-          {this.state.y}
-        </p>
-        <p> Gif:{this.state.x}
         </p>
           <div>This is GIF IMAGE:
-            <embed src={this.state.x}/>
+            {this.state.list.map(url => <embed key={url} src={url}/>)}
           </div>
       </div>
     );
